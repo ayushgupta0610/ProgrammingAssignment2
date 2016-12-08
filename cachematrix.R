@@ -1,53 +1,36 @@
-## makeCacheMatrix stores a calculated inverse of a matrix
+## Two functions performing caching of the inverse of matrix, use round(a %*% b) to check better for the multiplication of matrix and its inverse.
 
-makeCacheMatrix <- function(x = matrix()) {
-  #create a placeholder to store a calculated inverse
-  Xinverse <- NULL
-  #create a function that stores a new calculated inverse
-  # in a new variable
-  set <- function(y=matrix()) {
-    #transfer the value of x to y
-    x <<- y
-    #store the inverse
-    Xinverse <<- NULL
-  }
-  #create get function to return the matrix "x"
-  get <- function() x
-  #store the calculated inverse of "x": inversed is assigned to Xinverse
-    setinverse <- function(solve) Xinverse <<- solve
-    #create a function that returns the cached inverse, Xinverse
-    getinverse <- function() Xinverse
-    #create a list of matrices
-    list (set=set, get=get, setinverse=setinverse, getinverse=getinverse)
-    
+## makeCacheMatrix : it takes an invertible matrix as the parameter 'x' 
+## 					 and returns a list wrapping 4 functions in it. It creates a matrix object that can cache its inverse.
+
+makeCacheMatrix <- function(outputMatrix = matrix()) {
+        cacheMatrix <- matrix();
+        set <- function(matrixToBeSet) {
+                outputMatrix <<- matrixToBeSet;
+                cacheMatrix <<- matrix();
+        }
+        get <- function() outputMatrix
+        setInverse <- function(Matrix) cacheMatrix <<- Matrix
+        getInverse <- function() cacheMatrix
+        list(set = set, get = get,
+             setInverse = setInverse,
+             getInverse = getInverse);
 }
 
-
-## cacheSolve function calls for the inverse of a matrix in the cache matrix
-##if the cache doesn't have the inverse of the matrix, cacheSolve calculates
-#the inverse of the matrix and then sends the result to the makecachematrix
-#to be stored for later use
+## cacheSolve : it requires a "special matrix" made by makeCacheMatrix
+##				The output is the inverse matrix, which is obtained either from the "special matrix's" cache or by calculation. 
 
 cacheSolve <- function(x, ...) {
-  #check whether the inverse is in the cache
-  Xinverse <- x$getinverse()
-  #test if the cachedinverse has a stored value
-  if(!is.null(Xinverse)){
-        ## Return a matrix that is the inverse of 'x'
-    return(Xinverse)
-  }
-  #if cachedinverse is null, then skip the if statement and calculate the inverse
-  #call for the matrix and assign it to a variable, 
-  data <- x$get()
-  #assign solution to cachedinverse variable
-  Xinverse <- solve(data)
-  #call for setinverse function and store the the inverse of the matrix in cache
-  x$setinverse(Xinverse)
-  #return the inverse of the matrix
-  Xinverse
-  
+        cacheMatrix <- x$getInverse();
+        if(!is.na(cacheMatrix)) {
+                message("getting cached inverse matrix");
+                return(cacheMatrix);
+        }
+        outputMatrix <- x$get();
+        Matrix <- solve(outputMatrix, ...);
+        x$setInverse(Matrix);
+        cacheMatrix;
 }
-#finalcommit
 
 #sample data to run. Create a 2x2 invertible matrix
 x <- matrix (1:4, 2,2)
