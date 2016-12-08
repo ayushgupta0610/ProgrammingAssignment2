@@ -32,3 +32,7 @@ cacheSolve <- function(x, ...) {
         cacheMatrix;
 }
 
+#sample data to run. Create a 2x2 invertible matrix
+x <- matrix (1:4, 2,2)
+#run the code
+cacheSolve(makeCacheMatrix(x))
